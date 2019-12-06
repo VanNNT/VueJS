@@ -1,29 +1,43 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <RobotBuilder/>
+    <div>
+        <router-link to="/">
+            <img alt="Vue logo" src="./assets/logo.png" width="5%">
+        </router-link>
+    </div>
+    <div class="container">
+        <aside class="aside">
+            <router-view name="sidebar"/>
+        </aside>
+    </div>
+    <div>
+        <router-view/>
+    </div>
   </div>
 </template>
 
 <script>
-//import TodoList from './components/TodoList/TodoList.vue'
-import RobotBuilder from './components/RobotBuilder.vue'
 
 export default {
   name: 'app',
-  components: {
-    RobotBuilder
-  }
 }
 </script>
 
-<style>
+<style scoped>
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  text-align: center;
+}
+.container {
+    margin-bottom: 20px;
+}
+.aside {
+    padding: 20px;
+    background-color: #aaa;
+    width: 100%;
+    height: 40px;
 }
 </style>

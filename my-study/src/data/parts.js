@@ -12,7 +12,7 @@ const parts = {
       cost: 1225.5
     },
     {
-      id: 2,
+      id: 'a',
       description: 'A friendly robot head with two eyes and a smile -- great for domestic use.',
       title: 'Friendly Bot',
       src: images('./head-friendly.png'),
