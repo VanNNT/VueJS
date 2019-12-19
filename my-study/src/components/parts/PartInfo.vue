@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="partsObj">
         <h1>aaa</h1>
         <h1>{{part.title}}</h1>
         <div>
@@ -9,9 +9,11 @@
 </template>
 
 <script>
-import parts from '../../data/parts';
+import getPartsMixin from "../../mixin/get-parts-mixin.js";
+
 export default {
     name: 'PartInfo',
+    mixins: [getPartsMixin],
     props: {
         partType: {type: String},
         id: {type: [Number, String],
@@ -20,10 +22,18 @@ export default {
             }
         }
     },
+    data() {
+        return {
+            partsObj: {}
+        }
+    },
+    created() {
+        this.partsObj = Object.assign({}, this.parts)
+    },
     computed: {
         part() {
             const { partType, id } = this;
-            return parts[partType].find(part => part.id === id);
+            return this.partsObj[partType].find(part => part.id === id);
         }
     }
 };

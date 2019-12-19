@@ -19,7 +19,10 @@ export default {
       return {
           mess: 'building your first robot!'
       }
-  }
+  },
+  created () {
+      console.log(process.env.VUE_APP_TEST, process.env.VUE_APP_SOME_TEST);
+  },
 }
 </script>
 

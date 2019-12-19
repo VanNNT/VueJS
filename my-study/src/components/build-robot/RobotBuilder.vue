@@ -1,46 +1,24 @@
 <template>
-  <div class="content">
+  <div v-if="availableParts" class="content">
     <div class="preview">
-        <CollapsibleSection>
-            <div class="preview-content">
-                <div class="top-row">
-                    <img :src="selectedRobot.head.src" />
-                </div>
-                <div class="middle-row">
-                    <img :src="selectedRobot.leftArm.src" class="rotate-left" />
-                    <img :src="selectedRobot.torso.src" />
-                    <img :src="selectedRobot.rightArm.src" class="rotate-right" />
-                </div>
-                <div class="bottom-row">
-                    <img :src="selectedRobot.base.src" />
-                </div>
-            </div>
-        </CollapsibleSection>
-            <div>
-      <table>
-        <thead>
-          <tr>
-            <th>Robot</th>
-            <th class="cost">Cost</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(robot, index) in cart" :key="index">
-            <td>{{robot.head.title}}</td>
-            <td class="cost">{{robot.cost}}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-        <button class="add-to-cart" @click="addToCart()">Add To Cart</button>
+      <CollapsibleSection>
+        <div class="preview-content">
+          <div class="top-row">
+            <img :src="selectedRobot.head.src" />
+          </div>
+          <div class="middle-row">
+            <img :src="selectedRobot.leftArm.src" class="rotate-left" />
+            <img :src="selectedRobot.torso.src" />
+            <img :src="selectedRobot.rightArm.src" class="rotate-right" />
+          </div>
+          <div class="bottom-row">
+            <img :src="selectedRobot.base.src" />
+          </div>
+        </div>
+      </CollapsibleSection>
+      <button class="add-to-cart" @click="addToCart()">Add To Cart</button>
     </div>
     <div class="top-row">
-      <!-- <div :class="[saleBorderClass, 'top', 'part']"> 
-        <div class="robot-name">
-            {{selectedRobot.head.title}}
-            <span v-if="selectedRobot.head.onSale">Sale!</span>
-        </div>
-      </div>-->
       <part-selector
         :parts="availableParts.heads"
         position="top"
@@ -75,11 +53,12 @@
 </template>
 
 <script>
-import availableParts from "../../data/parts";
 import constants from "../../data/constants";
-import createHookMixin from "../../mixin/created-hook-mixin";
 import PartSelector from "./PartSelector.vue";
-import CollapsibleSection from "../../shared/CollapsibleSection.vue"
+import CollapsibleSection from "../shared/CollapsibleSection.vue";
+import { mapActions } from "vuex";
+
+var addedToCart = false;
 
 export default {
   name: "RobotBuilder",
@@ -92,9 +71,6 @@ export default {
   },
   data() {
     return {
-      content: "data in beforeCreate",
-      availableParts,
-      cart: [],
       constants,
       selectedRobot: {
         head: {},
@@ -105,13 +81,16 @@ export default {
       }
     };
   },
-  mixins: [createHookMixin],
   computed: {
+    availableParts() {
+      return this.$store.state.robots.parts;
+    },
     saleBorderClass() {
       return this.selectedRobot.head.onSale ? "sale-border" : "";
     }
   },
   methods: {
+    ...mapActions("robots", ["getParts", "addRobotToCart"]),
     addToCart() {
       const robot = this.selectedRobot;
       const cost =
@@ -120,7 +99,24 @@ export default {
         robot.rightArm.cost +
         robot.torso.cost +
         robot.base.cost;
-      this.cart.push(Object.assign({}, robot, { cost }));
+      this.addRobotToCart(Object.assign({}, robot, { cost })).then(() =>
+        this.$router.push("/cart")
+      );
+      addedToCart = true;
+    }
+  },
+  created() {
+    //this.$store.dispatch('robots/getParts');
+    this.getParts();
+  },
+  beforeRouteLeave(to, from, next) {
+    if (addedToCart) {
+      next(true);
+    } else {
+      const response = confirm(
+        "You have not added your robot to your cart, are you sure you want to leave?"
+      );
+      next(response);
     }
   }
 };
