@@ -16,16 +16,14 @@ const config = {
       },
       {
         test: /\.vue$/,
+        loader: "vue-loader"
+      },
+      {
+        test: /\.scss$/,
         use: [
-          {
-            loader: 'vue-loader'
-          },
-          {
-            loader: 'css-loader'
-          },
-          {
-            loader: 'sass-loader'
-          }
+          'vue-style-loader',
+          'css-loader',
+          'sass-loader'
         ]
       }
     ],
